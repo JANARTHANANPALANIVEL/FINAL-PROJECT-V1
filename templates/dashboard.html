@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTELLITEST - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: transform 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-lg fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center">
+                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-500">INTELLITEST</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <a href="/" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors duration-200">Home</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-16">
+        <div class="gradient-bg py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold text-white">Test Results Dashboard</h1>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {% if results %}
+                {% for result in results %}
+                    <div class="bg-white rounded-lg shadow-lg p-6 mb-8 card-hover">
+                        <div class="border-b border-gray-200 pb-4 mb-4">
+                            <h2 class="text-xl font-semibold text-gray-900">{{ result.url }}</h2>
+                            <p class="text-sm text-gray-500 mt-1">Tested on: {{ result.timestamp }}</p>
+                        </div>
+
+                        <!-- Functional Tests -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Functional Tests</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-green-800 mb-2">Passed Tests</h4>
+                                    <ul class="space-y-2">
+                                        {% for test in result.functional.passed %}
+                                            <li class="flex items-center text-green-700">
+                                                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                                </svg>
+                                                {{ test }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="bg-red-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-red-800 mb-2">Failed Tests</h4>
+                                    <ul class="space-y-2">
+                                        {% for test in result.functional.failed %}
+                                            <li class="flex items-center text-red-700">
+                                                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+                                                </svg>
+                                                {{ test }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Tests -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Performance Metrics</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-blue-50 rounded-lg p-6 text-center">
+                                    <p class="text-sm font-medium text-blue-800 mb-1">Load Time</p>
+                                    <p class="text-3xl font-bold text-blue-900">{{ result.performance.load_time }}s</p>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-6 text-center">
+                                    <p class="text-sm font-medium text-blue-800 mb-1">Page Size</p>
+                                    <p class="text-3xl font-bold text-blue-900">{{ result.performance.page_size|round(2) }} KB</p>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-6 text-center">
+                                    <p class="text-sm font-medium text-blue-800 mb-1">Resources</p>
+                                    <p class="text-3xl font-bold text-blue-900">{{ result.performance.resource_count }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Tests -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Security Analysis</h3>
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <div class="flex items-center mb-4">
+                                    <p class="font-medium text-gray-700">Risk Level:</p>
+                                    <span class="ml-2 px-3 py-1 rounded-full text-sm font-medium
+                                        {% if result.security.risk_level == 'High' %}bg-red-100 text-red-800
+                                        {% elif result.security.risk_level == 'Medium' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-green-100 text-green-800{% endif %}">
+                                        {{ result.security.risk_level }}
+                                    </span>
+                                </div>
+                                {% if result.security.alerts %}
+                                    <div class="mt-4">
+                                        <h4 class="font-medium text-gray-900 mb-3">Security Alerts</h4>
+                                        <div class="space-y-3">
+                                            {% for alert in result.security.alerts %}
+                                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                                    <div class="flex items-center">
+                                                        <svg class="h-5 w-5 text-yellow-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                        </svg>
+                                                        <p class="font-medium text-gray-900">{{ alert.name }}</p>
+                                                        <span class="ml-2 px-2 py-1 text-xs rounded-full
+                                                            {% if alert.risk == 'High' %}bg-red-100 text-red-800
+                                                            {% elif alert.risk == 'Medium' %}bg-yellow-100 text-yellow-800
+                                                            {% else %}bg-green-100 text-green-800{% endif %}">
+                                                            {{ alert.risk }}
+                                                        </span>
+                                                    </div>
+                                                    <p class="mt-2 text-sm text-gray-600">{{ alert.description }}</p>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <p class="mt-4 text-gray-500 text-lg">No test results available yet.</p>
+                    <a href="/" class="mt-4 inline-block px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white gradient-bg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200">
+                        Run New Test
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>
