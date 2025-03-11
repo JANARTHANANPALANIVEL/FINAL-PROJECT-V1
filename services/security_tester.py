@@ -4,7 +4,7 @@ import time
 class SecurityTester:
     def __init__(self):
         self.zap = ZAPv2(
-            apikey='c9sqolnd0e46dkqc75o5gd3hhc',
+            apikey='c9sqoln*************',
             proxies={'http': 'http://127.0.0.1:8080', 'https': 'http://127.0.0.1:8080'}
         )
         
